@@ -3,6 +3,7 @@
 
 <head>
   <title>Fake Store</title>
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,175 +11,44 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Ubuntu:ital,wght@1,300;1,400&display=swap"
     rel="stylesheet">
 
+  <!-- Bootstrap and StyleSheet  -->
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 
 </head>
 
 <body>
+
   <div class="header">
 
-    
-      <h1>Welcome to Fake Store</h1>
-      <h2>First come First Server!!</h2>
-    
+
+    <h1>Welcome to Fake Store</h1>
+    <h2>First come First Server!!</h2>
+
   </div>
   <div id="productInfo" class="container"></div>
 
   <div class="container mt-2">
-    <button onclick="displayProductsAboveAvgPrice()" class="btn btn-primary mt-2 items">1. List Products with Above
+    <button onclick="displayProductsAboveAvgPrice()" class="btn btn-primary mt-2 items">Products with Above
       Average Price</button>
-    <button onclick="displayTopRatedProducts()" class="btn btn-primary mt-2 items">2. List Top 5 Products with Highest
+    <button onclick="displayTopRatedProducts()" class="btn btn-primary mt-2 items">Top 5 Products with Highest
       Rating</button>
-    <button onclick="displayCategories()" class="btn btn-primary mt-2 items">3. List All Distinct Categories</button>
-    <button onclick="displayAveragePriceAndRating()" class="btn btn-primary mt-2 items">4. Print Average Price and
+    <button onclick="displayCategories()" class="btn btn-primary mt-2 items">List All Distinct Categories</button>
+    <button onclick="displayAveragePriceAndRating()" class="btn btn-primary mt-2 items">Average Price and
       Rating of Products</button>
-    <button onclick="displayTopRatedAndLowestPricedProducts()" class="btn btn-primary mt-2 items">5. List Top 5 Products
+    <button onclick="displayTopRatedAndLowestPricedProducts()" class="btn btn-primary mt-2 items">Top 5 Products
       with Highest Rating and Lowest Price</button>
-    <button onclick="displayUserProductInfo()" class="btn btn-primary mt-2 items">6. List User Product
+    <button onclick="displayUserProductInfo()" class="btn btn-primary mt-2 items">User Product
       Information</button>
   </div>
 
   <div id="productInfo" class="container mt-4"></div>
 
-  <script>
-    async function fetchJSON(url) {
-      const response = await fetch(url);
-      const data = await response.json();
-      return data;
-    }
-
-    async function fetchProducts() {
-      return fetchJSON('https://fakestoreapi.com/products');
-    }
-
-    async function fetchUsers() {
-      return fetchJSON('https://fakestoreapi.com/users');
-    }
-
-    async function getProductsWithAboveAvgPrice() {
-      const products = await fetchProducts();
-      const prices = products.map(product => product.price);
-      const averagePrice = prices.reduce((total, price) => total + price, 0) / prices.length;
-      const aboveAvgProducts = products.filter(product => product.price > averagePrice);
-      return aboveAvgProducts;
-    }
-
-    async function getTopRatedProducts() {
-      const products = await fetchProducts();
-      products.sort((a, b) => b.rating - a.rating);
-      return products.slice(0, 5);
-    }
-
-    async function getAllCategories() {
-      const products = await fetchProducts();
-      const categories = [...new Set(products.map(product => product.category))];
-      return categories;
-    }
-
-    async function getAveragePriceAndRating() {
-      const products = await fetchProducts();
-      const prices = products.map(product => product.price);
-      const ratings = products.map(product => product.rating);
-      const averagePrice = prices.reduce((total, price) => total + price, 0) / prices.length;
-      const averageRating = ratings.reduce((total, rating) => total + rating, 0) / ratings.length;
-      return { averagePrice, averageRating };
-    }
-
-    async function getTopRatedAndLowestPricedProducts() {
-      const products = await fetchProducts();
-      products.sort((a, b) => b.rating - a.rating || a.price - b.price);
-      return products.slice(0, 5);
-    }
-
-    async function getUserProductInfo() {
-      const [products, users] = await Promise.all([fetchProducts(), fetchUsers()]);
-
-      const userProductInfo = users.map(user => {
-        const userProducts = products.filter(product => product.userId === user.id);
-        const totalBill = userProducts.reduce((total, product) => total + product.price, 0);
-
-        return {
-          name: user.name,
-          email: user.email,
-          city: user.address.city,
-          products: userProducts.map(product => product.title),
-          prices: userProducts.map(product => product.price),
-          totalBill,
-        };
-      });
-
-      return userProductInfo;
-    }
-
-    async function displayProductsAboveAvgPrice() {
-      const aboveAvgProducts = await getProductsWithAboveAvgPrice();
-
-      const productInfoDiv = document.getElementById('productInfo');
-      const productHtml = aboveAvgProducts.map(product => `<div class="card mb-3">${product.title} - $${product.price}</div>`).join('');
-      productInfoDiv.innerHTML = productHtml;
-    }
-
-
-    async function displayTopRatedProducts() {
-      const topRatedProducts = await getTopRatedProducts();
-
-      const productInfoDiv = document.getElementById('productInfo');
-      const productHtml = topRatedProducts.map(product => `<div class="card mb-3">${product.title} - Rating: ${product.rating}</div>`).join('');
-      productInfoDiv.innerHTML = productHtml;
-    }
-
-    async function displayCategories() {
-      const categories = await getAllCategories();
-
-      const productInfoDiv = document.getElementById('productInfo');
-      const categoryHtml = categories.map(category => `<div class="card mb-3">${category}</div>`).join('');
-      productInfoDiv.innerHTML = categoryHtml;
-    }
-
-    async function displayAveragePriceAndRating() {
-      const { averagePrice, averageRating } = await getAveragePriceAndRating();
-
-      const productInfoDiv = document.getElementById('productInfo');
-      const infoHtml = `
-        <div class="card mb-3">Average Price: $${averagePrice.toFixed(2)}</div>
-        <div class="card mb-3">Average Rating: ${averageRating.toFixed(2)}</div>
-      `;
-      productInfoDiv.innerHTML = infoHtml;
-    }
-
-    async function displayTopRatedAndLowestPricedProducts() {
-      const topRatedAndLowestPricedProducts = await getTopRatedAndLowestPricedProducts();
-
-      const productInfoDiv = document.getElementById('productInfo');
-      const productHtml = topRatedAndLowestPricedProducts.map(product => `<div class="card mb-3">${product.title} - Rating: ${product.rating} - Price: $${product.price}</div>`).join('');
-      productInfoDiv.innerHTML = productHtml;
-    }
-
-    async function displayUserProductInfo() {
-      const userProductInfo = await getUserProductInfo();
-      const userInfoDiv = document.getElementById('productInfo');
-
-      const userInfoHtml = userProductInfo.map(user => `
-        <div class="card mb-3">
-          <div class="card-header">${user.name}</div>
-          <div class="card-body">
-            <p class="card-text">Email: ${user.email}</p>
-            <p class="card-text">City: ${user.city}</p>
-            <ul class="list-group">
-              ${user.products.map((product, index) => `<li class="list-group-item">${product} - $${user.prices[index]}</li>`).join('')}
-            </ul>
-            <p class="card-text">Total Bill: $${user.totalBill}</p>
-          </div>
-        </div>
-      `).join('');
-
-      userInfoDiv.innerHTML = userInfoHtml;
-    }
-
-  </script>
+  <script src="java/java.js"></script>
 </body>
 <footer>
   <p>@Habib</p>
 </footer>
+
 </html>
