@@ -1,0 +1,31 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 2rem;
+    background-color: #CBFFA9;
+}
+h1 {
+    margin-left: 15%;
+    color: #321E1E;
+    font-weight: bolder;
+}
+h2 {
+    margin-left: 5%;
+}
+.header {
+    background-color: #CECE5A;
+ 
+}
+
+.items {
+    margin-top: 15%;
+    margin: 20px;
+    display: flow-root;
+    color:azure;
+    background-color: #321E1E;
+    
+}
+footer {
+    text-align: center;
+    margin: 0;
+}
